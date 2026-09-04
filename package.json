@@ -1,0 +1,17 @@
+{
+  "name": "ultimate-backend",
+  "version": "1.0.0",
+  "description": "a backend at chai aur code channel",
+  "keywords": [
+    "javascript",
+    "backend",
+    "chai"
+  ],
+  "license": "ISC",
+  "author": "Yash Bhardwaj",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  }
+}
