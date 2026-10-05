@@ -280,7 +280,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         {
             $set: {
                 fullName,
-                email: email
+                email: email // dono side same hai to bas ek hi likh lo ES6 ka syntax hai 
             }
         },
         { new: true }
@@ -436,7 +436,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     const user = await User.aggregate([
         {
             $match: {
-                _id: new mongoose.Types.ObjectId(req.user._id)
+                _id: new mongoose.Types.ObjectId(req.user._id)  // mongoose ki object id banao coz aggregation pipeline ka code directly jata h waise to mongoose mongo id ke dwara behje gaye string ko backend me sab dek leta hai  
             }
         },
         {
