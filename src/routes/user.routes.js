@@ -34,7 +34,7 @@ router.route("/register").post(
 router.route("/login").post(loginUser)
 
 //secured routes  :-
-router.route("/logout").post(verifyJWT, logoutUser)  //verifyJWT is a auth middleware injected just before logoutUser
+router.route("/logout").post(verifyJWT, logoutUser)  //verifyJWT is a auth middleware injected just before logoutUser which is a controller
 router.route("/refresh-token").post(refreshAccessToken)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/current-user").get(verifyJWT, getCurrentUser)

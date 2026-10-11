@@ -1,5 +1,5 @@
-// require('dotenv').config({path: './env'})
-import dotenv from "dotenv"
+// require('dotenv').config({path: './env'})  // traditional old method modern method used import 
+import dotenv from "dotenv"  // import agar use krna h project me to package.json me type = "module" set kr do 
 import connectDB from "./db/index.js";
 import {app} from './app.js'
 dotenv.config({
