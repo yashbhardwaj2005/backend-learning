@@ -27,6 +27,8 @@ No backend source, test, configuration, environment, dependency, port or hosting
 - Production-build browser fixture used only a local simulated API, with two temporary 503 responses followed by a healthy anonymous response. The connecting notice and disabled submission were visible. After recovery the form submitted once and reached the simulated Profile. `browser-test-results.json` records five GET checks, one normal failed anonymous refresh request, one login submission, and no login while unavailable. No real account or upload was created.
 - Live production availability was checked separately, as described above; the owner confirmed successful real login. The unit/browser fixture tests do not test production MongoDB or guarantee hosting uptime.
 
+Publication: code commit `aa78aa3` was pushed to `origin/main`. The live Vercel domain served the new production asset `assets/index-BxO7Mz8y.js`, matching the tested build, and the existing signed-in Profile loaded correctly after a fresh page load. All 22 backend hashes still matched the saved baseline. The disposable local test server was stopped. A cropped live verification screenshot is saved privately as `client/.qa/auth-recovery-live-verified.jpg`.
+
 ## Undo
 
 From the project root, preview:
