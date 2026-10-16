@@ -2,6 +2,15 @@
 
 Keep this file updated for every substantive change. Save original files before editing so a specific change can be undone without discarding unrelated work.
 
+## 16 October 2026 — Vercel/Render production routing
+
+- Live diagnosis: Vercel homepage returned 200, but `/register` and `/api/v1/users/current-user` returned Vercel 404. Render returned JSON 401 for anonymous current-user and JSON 400 for an empty login request. The deployed Axios base was `/api/v1`. These failures were missing production routing, not a port clash.
+- Added client/vercel.json with API forwarding to the existing Render service before the React SPA fallback. API responses opt out of CDN caching. Vercel Root Directory was confirmed as client.
+- Kept relative `/api/v1` requests, withCredentials and existing cookie authentication. Updated client/src/api/client.js to allow 90 seconds in production for idle Render startup and to show production-appropriate connection errors; local timeout stays 20 seconds.
+- Updated frontend environment-example comments and README deployment instructions. No backend source, backend environment value or cookie/CORS policy was changed.
+- Saved exact originals in docs/change-history/2026-10-16-vercel-render-routing/. Preview restore.ps1 there, or add `-Restore` to apply the frontend rollback. Change history is preserved. Rollback of a published fix needs a new commit/redeploy.
+- Final build, backend-hash checks and deployment results are recorded in the snapshot README.
+
 ## 16 October 2026 — GitHub upload preparation and VS Code instructions
 
 - Added clear root README instructions for opening the correct top-level project folder and starting Express/Vite in separate terminals. VS Code Go Live serves static files and does not start this application.

@@ -3,7 +3,8 @@ import axios from "axios";
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "/api/v1",
   withCredentials: true, // Express reads its HTTP-only cookies, not localStorage.
-  timeout: 20000,
+  // A free Render service can take about a minute to wake after being idle.
+  timeout: import.meta.env.PROD ? 90000 : 20000,
 });
 
 // Share one refresh request when several requests expire at the same time.
@@ -41,15 +42,19 @@ api.interceptors.response.use(
 );
 
 export function getApiError(error) {
-  if (!error.response)
-    return "We couldn’t reach the server. Check that your backend is running on port 8000, then try again.";
+  if (!error.response) {
+    if (error.code === "ECONNABORTED")
+      return "The server took too long to respond. Please wait a moment and try again.";
+    return import.meta.env.PROD
+      ? "We couldn’t reach the service. Please try again in a moment."
+      : "We couldn’t reach the server. Check that your backend is running on port 8000, then try again.";
+  }
   if (error.response.status >= 500)
     return "The server couldn’t complete this request. Please try again in a moment.";
   if (typeof error.response.data?.message === "string")
     return error.response.data.message;
 
-  // This Express app currently returns HTML errors. Show only the message,
-  // never its HTML markup or the stack trace.
+  // Some hosting/proxy errors return HTML. Never display markup or a stack.
   if (typeof error.response.data === "string") {
     const document = new DOMParser().parseFromString(
       error.response.data.replace(/<br\s*\/?>/gi, "\n"),

@@ -127,9 +127,31 @@ Backend development now watches only `src/`, so React edits do not restart Expre
 
 **Test:** choose a small MP4 in Create, edit the title and description, choose an image thumbnail, and click Preview your video. Check that the player works and no upload request appears in Network.
 
-## CORS and deployment
+## Vercel frontend and Render backend
 
-The backend uses `CORS_ORIGIN=*` with credentials, which browsers reject for **direct cross-origin cookie requests**. Local Vite proxies `/api` so browser requests are same-origin. The backend sets HttpOnly and SameSite=Lax cookies, with Secure enabled when NODE_ENV=production. Vite now forwards cookies normally, without rewriting their attributes.
+Production website: https://backend-learning-phi-rust.vercel.app/
+Render API: https://streamtube-api.onrender.com/
+
+Vercel Root Directory must be `client`, Framework Preset `Vite`, Build Command `npm run build`, and Output Directory `dist`. Leave `VITE_API_BASE_URL` unset or set it to `/api/v1` for the production environment. Do not set it to localhost or directly to the Render hostname for this proxy setup. Environment changes require a new Vercel build.
+
+`client/vercel.json` forwards `/api/:path*` to Render, retaining the `/api` prefix, before the React route fallback. It also serves index.html for React routes such as `/login`, `/register` and `/watch/demo-alpine`, so refreshing or directly opening those pages works. API responses opt out of CDN caching.
+
+```text
+Browser → https://backend-learning-phi-rust.vercel.app/api/v1/users/login
+        → Vercel rewrite → https://streamtube-api.onrender.com/api/v1/users/login
+```
+
+The browser sees one HTTPS origin, so existing HttpOnly cookies work with the backend's SameSite=Lax policy. No token is put into localStorage and no cross-site cookie relaxation is needed for this setup. The backend's existing Secure flag still depends on its NODE_ENV; production should use NODE_ENV=production. Backend code/environment changes require approval.
+
+Production requests allow 90 seconds because free Render services can need about one minute to wake after idle. Local requests retain the existing 20-second timeout. Error messages on the deployed website no longer tell visitors to start port 8000 on their own computer.
+
+**Check after redeploy:** `/register` should return the React page (200). `/api/v1/users/current-user` should return JSON 401 while signed out, not Vercel 404. Empty POST `/api/v1/users/login` should return backend JSON 400. Then test signup, login, refresh Profile and logout in the browser. The API must never return index.html.
+
+Sources: [Vercel Vite SPA routing](https://vercel.com/docs/frameworks/frontend/vite#using-vite-to-make-spas), [external API rewrites and caching](https://vercel.com/docs/routing/rewrites), [Render idle startup](https://render.com/docs/free#spinning-down-on-idle).
+
+## Other deployment arrangements
+
+Local Vite proxies `/api` so browser requests are same-origin. The backend sets HttpOnly and SameSite=Lax cookies, with Secure enabled when NODE_ENV=production. Vite forwards cookies normally, without rewriting their attributes. The local CORS value was `*` during initial development; live deployment values are configured separately. Direct cross-origin cookie requests need the exact allowed origin, not `*`, plus compatible cookie settings.
 
 `npm run preview` is for inspecting the built UI and does not provide this development API proxy. For real account functionality in production, serve frontend and backend behind the same HTTPS origin with `/api` forwarded to Express, or configure the exact frontend origin in backend CORS and appropriate HTTPS cookie settings. An absolute `VITE_API_BASE_URL` needs those cross-origin settings. HTTPS production cookies must keep Secure and HttpOnly. Do not deploy Vite's development proxy as a production server.
 
