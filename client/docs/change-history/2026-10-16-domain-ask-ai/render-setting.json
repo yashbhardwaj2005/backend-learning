@@ -1,0 +1,11 @@
+{
+  "service": "streamtube-api",
+  "serviceId": "srv-db8uf3bl550s73f88tvg",
+  "setting": "CORS_ORIGIN",
+  "before": "https://backend-learning-phi-rust.vercel.app",
+  "after": "https://yashstreamtube.vercel.app",
+  "approvedByOwner": true,
+  "verifiedAfterRedeploy": true,
+  "rollbackRequiresFreshApproval": true,
+  "note": "Public origin only. No credentials or actual environment files are saved."
+}

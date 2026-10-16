@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useOutletContext, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Bookmark,
   Check,
   ChevronDown,
   Share2,
+  Sparkles,
   ThumbsUp,
 } from "lucide-react";
 import { videos } from "../data/mockVideos";
@@ -16,6 +17,7 @@ import VideoPlayer from "../components/VideoPlayer";
 
 export default function Watch() {
   const { id } = useParams();
+  const { openAssistant } = useOutletContext();
   const video = videos.find((item) => item.id === id);
   const { library, toggle, remember } = useLibrary();
   const [expanded, setExpanded] = useState(false);
@@ -67,6 +69,9 @@ export default function Watch() {
               </div>
             </div>
             <div className="action-buttons">
+              <button className="button button-subtle ask-ai-watch-trigger" onClick={openAssistant}>
+                <Sparkles size={17} /> Ask AI
+              </button>
               <button
                 className={`button button-subtle ${liked ? "toggled" : ""}`}
                 onClick={() => toggle("liked", id)}

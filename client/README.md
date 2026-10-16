@@ -129,7 +129,7 @@ Backend development now watches only `src/`, so React edits do not restart Expre
 
 ## Vercel frontend and Render backend
 
-Production website: https://backend-learning-phi-rust.vercel.app/
+Production website: https://yashstreamtube.vercel.app/
 Render API: https://streamtube-api.onrender.com/
 
 Vercel Root Directory must be `client`, Framework Preset `Vite`, Build Command `npm run build`, and Output Directory `dist`. Leave `VITE_API_BASE_URL` unset or set it to `/api/v1` for the production environment. Do not set it to localhost or directly to the Render hostname for this proxy setup. Environment changes require a new Vercel build.
@@ -137,7 +137,7 @@ Vercel Root Directory must be `client`, Framework Preset `Vite`, Build Command `
 `client/vercel.json` forwards `/api/:path*` to Render, retaining the `/api` prefix, before the React route fallback. It also serves index.html for React routes such as `/login`, `/register` and `/watch/demo-alpine`, so refreshing or directly opening those pages works. API responses opt out of CDN caching.
 
 ```text
-Browser → https://backend-learning-phi-rust.vercel.app/api/v1/users/login
+Browser → https://yashstreamtube.vercel.app/api/v1/users/login
         → Vercel rewrite → https://streamtube-api.onrender.com/api/v1/users/login
 ```
 
@@ -148,6 +148,35 @@ Production requests allow 90 seconds because free Render services can need about
 **Check after redeploy:** `/register` should return the React page (200). `/api/v1/users/current-user` should return JSON 401 while signed out, not Vercel 404. Empty POST `/api/v1/users/login` should return backend JSON 400. Then test signup, login, refresh Profile and logout in the browser. The API must never return index.html.
 
 Sources: [Vercel Vite SPA routing](https://vercel.com/docs/frameworks/frontend/vite#using-vite-to-make-spas), [external API rewrites and caching](https://vercel.com/docs/routing/rewrites), [Render idle startup](https://render.com/docs/free#spinning-down-on-idle).
+
+## Ask AI with Gemini
+
+The Ask AI button opens a small chat panel from the header or a video page. Sign in first, then ask about a listing, find related demo videos, or ask how to use StreamTube. Questions and the current listing are kept in React state; the conversation is not saved to localStorage or MongoDB.
+
+| File | What it does |
+| --- | --- |
+| `src/components/AskAI.jsx` and `AskAI.css` | Responsive dialog, questions, loading/errors, safe video links and chat state. |
+| `src/components/Layout.jsx` and `src/pages/Watch.jsx` | Header and video-page buttons open the same panel. React Router's Outlet context shares only the open function. |
+| Backend `src/routes/ai.routes.js` | Adds `POST /api/v1/ai/ask`, protected by the existing cookie authentication middleware. |
+| Backend `src/controllers/ai.controller.js` | Validates the question/context, calls Gemini with Node fetch, and returns only the model's final text. |
+| Backend `tests/ai.test.js` | Isolated tests for validation, configuration, privacy, limits and provider failures. No real Google calls. |
+
+```text
+React panel → Axios /api/v1/ai/ask → Vercel rewrite → Render → Google Gemini
+                                                   ↑ server-only API key
+```
+
+**Owner setup:** create an API key in [Google AI Studio](https://aistudio.google.com/api-keys). In Render → streamtube-api → Environment, add `GEMINI_API_KEY` with that key and save/redeploy. The default model is `gemini-3.5-flash-lite`; optional `GEMINI_MODEL` can select another supported text model. Keep secrets out of Vercel's frontend variables, all `VITE_` settings, Git and chat. For local AI development, adding the key to the root backend environment also requires the owner's approval; this change does not edit that environment file.
+
+Google currently offers a free tier for the selected model, subject to its project quotas and availability. Paid billing is not required by this application. Review [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing) and [key security](https://ai.google.dev/gemini-api/docs/api-key) for your project. Do not enable paid billing just to finish this setup.
+
+The request contains a question, at most four previous messages, and at most nine public demo listings. Account details, cookies and credentials are not added to the Google prompt. A user can type private information into a question, so the panel discloses that messages go to Google. Interaction storage is disabled with `store: false`; Google's API data policies still apply.
+
+There are **no transcripts or video analysis** in this version. The AI can explain supplied descriptions or teach a topic generally; it cannot summarize unseen footage or invent timestamps. Listing titles are fictional and the bundled sample footage may differ. The assistant cannot upload videos, change accounts or execute actions. Recommendations link only to known local video IDs.
+
+The backend allows ten AI requests per signed-in user per minute and aborts a provider request after 30 seconds. The small rate limit resets on restart and is separate for each server process. Missing key, quota, timeout and provider failures show a clear message; there are no fake AI answers as a fallback.
+
+**Test after deployment:** open a video → Ask AI → sign in → ask “What does this listing's description say?” Check that a real reply appears and that a recommendation opens a known video. Close/reopen the panel, press Escape, and check a narrow mobile viewport. A signed-out POST to `/api/v1/ai/ask` should return JSON 401; a signed-in request without the configured key should return JSON 503. Run `npm test` at the repository root and `npm run build` in `client` for the automated checks.
 
 ## Other deployment arrangements
 

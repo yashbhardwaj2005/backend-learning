@@ -22,6 +22,7 @@ import {
   Music2,
   Plus,
   Search,
+  Sparkles,
   ThumbsUp,
   Upload,
   UserRound,
@@ -31,6 +32,7 @@ import { useAuth } from "../context/AuthContext";
 import { Avatar } from "./VideoCard";
 import CreatorCredit from "./CreatorCredit";
 import ThemeToggle from "./ThemeToggle";
+import AskAI from "./AskAI";
 
 export function Brand() {
   return (
@@ -65,6 +67,7 @@ const discoverLinks = [
 export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const { user } = useAuth();
@@ -155,6 +158,16 @@ export default function Layout() {
           </button>
         </form>
         <div className="topbar-actions">
+          <button
+            className="ask-ai-trigger"
+            aria-label="Ask AI"
+            aria-haspopup="dialog"
+            aria-expanded={aiOpen}
+            onClick={() => setAiOpen(true)}
+          >
+            <Sparkles size={17} />
+            <span>Ask AI</span>
+          </button>
           <ThemeToggle />
           <Link to="/upload" className="create-button" aria-label="Create">
             <Plus size={18} />
@@ -242,7 +255,7 @@ export default function Layout() {
       </aside>
 
       <main id="main-content" className="main-content">
-        <Outlet />
+        <Outlet context={{ openAssistant: () => setAiOpen(true) }} />
         <CreatorCredit />
       </main>
       <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
@@ -263,6 +276,7 @@ export default function Layout() {
           You
         </Link>
       </nav>
+      <AskAI open={aiOpen} onClose={() => setAiOpen(false)} />
     </div>
   );
 }

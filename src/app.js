@@ -20,9 +20,11 @@ app.use(cookieParser()) // cookie-parser makes it easy for Express to access coo
 
 // routes import 
 import userRouter from './routes/user.routes.js'   // Bring me the user-related routes.
+import aiRouter from './routes/ai.routes.js'
 
 // routes declaration
 app.use("/api/v1/users",userRouter)  // ==> http://localhost:8000/api/v1/users/register
+app.use("/api/v1/ai", aiRouter)
 app.use(errorHandler) // Error middleware goes after the routes.
 
 

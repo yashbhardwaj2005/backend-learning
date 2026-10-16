@@ -2,6 +2,15 @@
 
 Keep this file updated for every substantive change. Save original files before editing so a specific change can be undone without discarding unrelated work.
 
+## 16 October 2026 — New domain and real Ask AI
+
+- Updated the documented production domain to https://yashstreamtube.vercel.app. The owner approved changing Render's CORS_ORIGIN from the old Vercel domain to this new origin. Port configuration in src/index.js is unchanged. The existing Vercel API rewrite still targets the same Render service.
+- Added components/AskAI.jsx and AskAI.css, with header/video-page buttons in Layout.jsx and Watch.jsx. The responsive panel uses real Gemini replies, existing cookie login, in-memory chat, loading/errors, safe internal video links, and visible limits about demo metadata and unavailable transcripts.
+- After separate explicit backend approval, added src/controllers/ai.controller.js, src/routes/ai.routes.js, tests/ai.test.js and the AI router mount in src/app.js. POST /api/v1/ai/ask is authenticated, validates bounded public context, limits requests, calls Gemini with a server-only key and never exposes raw provider errors. No packages or database models were added.
+- Default provider/model: Gemini / gemini-3.5-flash-lite. GEMINI_API_KEY must be added privately in Render by the owner. No actual environment file or secret is saved in this change history. No fake AI responses replace missing configuration.
+- Saved exact originals, approved scope, public CORS setting history, manifests and undo instructions in docs/change-history/2026-10-16-domain-ask-ai/. Frontend restore is separate; any backend or Render rollback needs fresh approval.
+- Verification: frontend build passed; all 15 backend tests passed (five existing auth tests plus ten isolated AI tests). Final browser and live deployment results are recorded in the snapshot README.
+
 ## 16 October 2026 — Vercel/Render production routing
 
 - Live diagnosis: Vercel homepage returned 200, but `/register` and `/api/v1/users/current-user` returned Vercel 404. Render returned JSON 401 for anonymous current-user and JSON 400 for an empty login request. The deployed Axios base was `/api/v1`. These failures were missing production routing, not a port clash.

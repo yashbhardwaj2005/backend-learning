@@ -1,0 +1,68 @@
+[
+  {
+    "path": "client/src/components/Layout.jsx",
+    "scope": "frontend",
+    "beforeSha256": "B6CADEFDFAFAB929D6EE184D33DC9DC02BE75ACA8BF6DE119AF4E9D6C88E208C",
+    "afterSha256": "0A2F185C1EC4CB102454FBC57961507893A1327988DB0701B30DC2A00460E4A0"
+  },
+  {
+    "path": "client/src/pages/Watch.jsx",
+    "scope": "frontend",
+    "beforeSha256": "B5E727BB1EE2D0A99B994601A9A445A371B4734E966055C644CCF5AECA4B7509",
+    "afterSha256": "82DF40F8A5FD3A29B17198CD68DF3BFED31C94453AD29CA82F45B251883D6292"
+  },
+  {
+    "path": "client/src/components/AskAI.jsx",
+    "scope": "frontend",
+    "beforeSha256": null,
+    "afterSha256": "C6B53B0FC9946BD59E0B36A7B92C7C58807B99A25AD49C9A5F2F8E6236ED171D"
+  },
+  {
+    "path": "client/src/components/AskAI.css",
+    "scope": "frontend",
+    "beforeSha256": null,
+    "afterSha256": "D1B117A5736A3CEDC654096E9543C0571F711E38BBC491C72E26770D709B7626"
+  },
+  {
+    "path": "client/README.md",
+    "scope": "frontend",
+    "beforeSha256": "1E9AA00ED90C3A3AFD4DE4D33E7CE71004725A99383DF9BC8317EF1EB435111C",
+    "afterSha256": "60A42CC95B786B248B963E44803335D7294528CCC19B4EBD7D13A47BF0362FD9"
+  },
+  {
+    "path": "src/app.js",
+    "scope": "backend",
+    "beforeSha256": "98AE65B6B030F3F00DDCB81D74D8A15BBA3C6C227297E7888C993056CE1F1ED4",
+    "afterSha256": "AF347BD3DE9AA1234ACE31E2A7E5A5F6C713F87695A6F82AEF27B68D1315F28C"
+  },
+  {
+    "path": "src/controllers/ai.controller.js",
+    "scope": "backend",
+    "beforeSha256": null,
+    "afterSha256": "803154143FDA939ACD8B76ED656781FD6294DB6411014A173B4A792A4E4D8F07"
+  },
+  {
+    "path": "src/routes/ai.routes.js",
+    "scope": "backend",
+    "beforeSha256": null,
+    "afterSha256": "69DAB9DE9F72CB5BA42258E65B5258CFE1DD21CEC3D3C0DE396C130E3236FCE5"
+  },
+  {
+    "path": "tests/ai.test.js",
+    "scope": "backend",
+    "beforeSha256": null,
+    "afterSha256": "DA069473199AA49FB08EA66B19214FBC61F55CBB33EA1EF62438641EF91C6489"
+  },
+  {
+    "path": "client/docs/ask-ai-backend-proposal.patch",
+    "scope": "history",
+    "beforeSha256": null,
+    "afterSha256": "471FC181C06EE918EE217D09A186F7CE0D557FA9B7D593AAE6B20E7375FD4F0C"
+  },
+  {
+    "path": "client/docs/ask-ai-backend-proposal.md",
+    "scope": "history",
+    "beforeSha256": null,
+    "afterSha256": "E14C615F7DEA9756B3FB7692FE1D0D8AA06F6DD930D811E0EB43B89B585006A2"
+  }
+]
