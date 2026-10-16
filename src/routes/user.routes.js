@@ -19,10 +19,11 @@ import multer from "multer";
 const router = Router()
 
 router.route("/register").post(
-    upload.fields([
+    upload.fields([               // here upload is the multer middleware name
+                                  // upload.fields() tells Multer which file fields to accept.
         {
             name: "avatar",
-            maxCount: 1
+            maxCount: 1           // maxCount: 1 means a maximum of one file is allowed for each field.
         }, 
         {
             name: "coverImage",

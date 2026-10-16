@@ -1,0 +1,5 @@
+# Preserve exact bytes so the saved frontend undo hashes survive cloning.
+/client/** -text
+/.gitignore -text
+/readme.md -text
+/.gitattributes -text

@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import { errorHandler } from "./middlewares/error.middleware.js"
 
 const app = express()  // Create Express application
 
@@ -22,6 +23,7 @@ import userRouter from './routes/user.routes.js'   // Bring me the user-related 
 
 // routes declaration
 app.use("/api/v1/users",userRouter)  // ==> http://localhost:8000/api/v1/users/register
+app.use(errorHandler) // Error middleware goes after the routes.
 
 
 export {app}

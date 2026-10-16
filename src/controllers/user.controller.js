@@ -25,6 +25,10 @@ const generateAccessAndRefereshTokens = async (userId) => {
     }
 }
 
+
+// REGISTER:-
+
+
 const registerUser = asyncHandler(async (req, res) => {
     // get user details from frontend
     // validation - not empty
@@ -36,15 +40,18 @@ const registerUser = asyncHandler(async (req, res) => {
     // check for user creation
     // return res
 
-
-    const { fullName, email, username, password } = req.body
+    let { fullName, email, username, password } = req.body || {}
     //console.log("email: ", email);
 
     if (
-        [fullName, email, username, password].some((field) => field?.trim() === "")
+        [fullName, email, username, password].some((field) => typeof field !== "string" || !field.trim())
     ) {
         throw new ApiError(400, "All fields are required")
     }
+
+    fullName = fullName.trim()
+    email = email.trim().toLowerCase()
+    username = username.trim().toLowerCase()
 
     const existedUser = await User.findOne({
         $or: [{ username }, { email }]
@@ -55,33 +62,39 @@ const registerUser = asyncHandler(async (req, res) => {
     }
     //console.log(req.files);
 
-    const avatarLocalPath = req.files?.avatar?.[0]?.path
+    const avatarLocalPath = req.files?.avatar?.[0]?.path  // it gets the first uploaded avatar file path
     //const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
+// console.log("FILES:", req.files);
+// console.log("BODY:", req.body);
+
     let coverImageLocalPath;
-    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+    if (req.files
+         && Array.isArray(req.files.coverImage) 
+         && req.files.coverImage.length > 0
+        ) 
+         {
         coverImageLocalPath = req.files.coverImage[0].path
     }
 
 
     if (!avatarLocalPath) {
-        throw new ApiError(400, "Avatar file is required")
+        throw new ApiError(400, "Avatar file is required - multer received NO file (check Postman form-data)")
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if (!avatar) {
-        throw new ApiError(400, "Avatar file is required")
-    }
+        throw new ApiError(400, "Cloudinary upload failed - check terminal for 'Cloudinary error'")    }
 
 
     const user = await User.create({
         fullName,
         avatar: avatar.url,
-        coverImage: coverImage?.url || "",
+        coverImage: coverImage?.url || "",  // || "" means: if the cover-image result has a URL, use it; otherwise, use an empty string.
         email,
-        password,
+        password, // ye direct password save nhi hota mongodb me hash hota h pehle => refer user.model pre hook codes
         username: username.toLowerCase()
     })
 
@@ -94,10 +107,14 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     return res.status(201).json(
-        new ApiResponse(200, createdUser, "User registered Successfully")
+        new ApiResponse(201, createdUser, "User registered Successfully")
     )
 
 })
+
+
+// LOGIN :-
+
 
 const loginUser = asyncHandler(async (req, res) => {
     // req body -> data
@@ -107,12 +124,17 @@ const loginUser = asyncHandler(async (req, res) => {
     //access and referesh token
     //send cookie
 
-    const { email, username, password } = req.body  // ye req.body data de dega 
-    console.log(email);
+    let { email, username, password } = req.body || {} // Read login details from the request.
 
-    if (!username && !email) {
+    if (!((typeof username === "string" && username.trim()) || (typeof email === "string" && email.trim()))) {
         throw new ApiError(400, "username or email is required")
     }
+
+    if (typeof password !== "string" || !password) {
+        throw new ApiError(400, "Password is required")
+    }
+    username = typeof username === "string" ? username.trim().toLowerCase() : undefined
+    email = typeof email === "string" ? email.trim().toLowerCase() : undefined
 
     // Here is an alternative of above code based on logic discussed in video:
     // if (!(username || email)) {
@@ -142,7 +164,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax"
     }
     // send cookies :- 
     return res.status(200)
@@ -160,7 +183,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
 })
 
-//user ko logout karne k liye mainly 2 kaam kro : cookies clear kro and access,refresh tokens clear kro
+
+// LOGOUT : - (user ko logout karne k liye mainly 2 kaam kro : cookies clear kro and access,refresh tokens clear kro)
+
 
 const logoutUser = asyncHandler(async (req, res) => {
 
@@ -178,7 +203,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     // clear cookies :-
     const options = {
         httpOnly: true,
-        secure: true
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax"
     }
 
     return res
@@ -190,7 +216,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+    const incomingRefreshToken = req.cookies?.refreshToken || req.body?.refreshToken
 
     if (!incomingRefreshToken) {
         throw new ApiError(401, "unauthorized request")
@@ -215,10 +241,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax"
         }
 
-        const { accessToken, newRefreshToken } = await generateAccessAndRefereshTokens(user._id)
+        const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefereshTokens(user._id)
 
         return res
             .status(200)
@@ -238,10 +265,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 })
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
-    const { oldPassword, newPassword } = req.body
-
-
-
+    const { oldPassword, newPassword } = req.body || {}
+    if (typeof oldPassword !== "string" || !oldPassword || typeof newPassword !== "string" || !newPassword.trim()) {
+        throw new ApiError(400, "Old and new passwords are required")
+    }
     const user = await User.findById(req.user?._id)
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
@@ -269,11 +296,14 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 })
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const { fullName, email } = req.body
+    let { fullName, email } = req.body || {}
 
-    if (!fullName || !email) {
+    if ([fullName, email].some((field) => typeof field !== "string" || !field.trim())) {
         throw new ApiError(400, "All fields are required")
     }
+
+    fullName = fullName.trim()
+    email = email.trim().toLowerCase()
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
@@ -283,9 +313,9 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
                 email: email // dono side same hai to bas ek hi likh lo ES6 ka syntax hai 
             }
         },
-        { new: true }
+        { new: true, runValidators: true }
 
-    ).select("-password")
+    ).select("-password -refreshToken")
 
     return res
         .status(200)
@@ -303,7 +333,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
-    if (!avatar.url) {
+    if (!avatar?.url) {
         throw new ApiError(400, "Error while uploading on avatar")
 
     }
@@ -316,7 +346,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
             }
         },
         { new: true }
-    ).select("-password")
+    ).select("-password -refreshToken")
 
     return res
         .status(200)
@@ -337,7 +367,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
-    if (!coverImage.url) {
+    if (!coverImage?.url) {
         throw new ApiError(400, "Error while uploading on avatar")
 
     }
@@ -350,7 +380,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
             }
         },
         { new: true }
-    ).select("-password")
+    ).select("-password -refreshToken")
 
     return res
         .status(200)

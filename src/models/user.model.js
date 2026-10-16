@@ -52,21 +52,24 @@ const userSchema = new Schema(
     }
 )
 
-userSchema.pre("save", async function (next) {
-    if(!this.isModified("password")) return next();
+userSchema.pre("save", async function () {    //  pre("save"): Run this function before saving a document.
 
-    this.password = await bcrypt.hash(this.password, 10)
-    next()
+    if (!this.isModified("password")) return; // Only hash a new or changed password.
+    this.password = await bcrypt.hash(this.password, 10)  // bcrypt.hash(this.password, 10): Converts the password into a secure hash. || this.password = ...: Replaces the plaintext password with the hash.
+    
+    // next() told Mongoose to proceed to the next middleware. Now,because your function is async, Mongoose automatically waits for it to finish. So now we dont use next() in 2026 in mongoose 9 or above
 })
 
 userSchema.methods.isPasswordCorrect = async function(password){
-    return await bcrypt.compare(password, this.password)
+    return await bcrypt.compare(password, this.password) // bcrypt.compare() returns true if the supplied password matches the stored hash, otherwise false.
 }
 
+// Generate ACCESS TOKEN :-   USUALLY SHORT LIVED 
+
 userSchema.methods.generateAccessToken = function(){
-    return jwt.sign(
+    return jwt.sign(    // jwt.sign consist of 3 parts : 1)PAYLOAD 2)SECRET 3)EXPIRY
         {
-            _id: this._id,
+            _id: this._id,         //this._id means user id
             email: this.email,
             username: this.username,
             fullName: this.fullName
@@ -77,8 +80,11 @@ userSchema.methods.generateAccessToken = function(){
         }
     )
 }
+
+//GENERATE REFRESH TOKEN:-  USUALLY LONG LIVED 
+
 userSchema.methods.generateRefreshToken = function(){
-    return jwt.sign(
+    return jwt.sign(       // jwt.sign in refresh token consists of same 3 parts but here payload has only user id
         {
             _id: this._id,
             

@@ -117,4 +117,12 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Local environment variants, temporary uploads and the extra local checkout.
+.env.*
+!.env.sample
+!.env.example
+/public/temp/*
+!/public/temp/.gitkeep
+/ULTIMATE-BACKEND/
+
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node

@@ -1,3 +1,5 @@
+ // cloudinary uploads the file on its server and gives your backend a URL. That URL is kept in your mongoDB
+ 
  import {v2 as cloudinary} from "cloudinary" 
  import fs from "fs"
 
@@ -11,15 +13,16 @@
     try {
         if(!localFilePath) return null
         // upload file on cloudinary syntax :-
-        const response = await cloudinary.uploader.upload(localFilePath,{
-            resource_type: "auto"
+        const response = await cloudinary.uploader.upload(localFilePath,{   // await means the function waits for the upload to finish before moving to the next line.
+            resource_type: "auto"   // resource_type: "auto" lets Cloudinary detect the type of resource being uploaded.
         })
-        // file has been uploaded succcessfully 
-        console.log("file is uploaded on cloudinary", response.url);
         return response;
     } catch (error) {
-        fs.unlinkSync(localFilePath)   // Remove the locally saved temporary files as the upload operation got failed 
+         console.error("Cloudinary error:", error);
         return null;
+    } finally {
+        // Multer's temporary file is no longer needed after success or failure.
+        if (localFilePath) await fs.promises.unlink(localFilePath).catch(() => {});
     }
  }
 

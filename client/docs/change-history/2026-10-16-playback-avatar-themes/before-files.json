@@ -1,0 +1,38 @@
+[
+  {
+    "path": "client/index.html",
+    "beforeSha256": "E4DDA7E6A437AA97AE9069CB764BC85D9DA2258D8CA1A770E04A2E015A7D658B"
+  },
+  {
+    "path": "client/src/main.jsx",
+    "beforeSha256": "D36EFD7E71427C9269C34DDB52EA816F7836C6F93F0AF0DBA30560693AE2562C"
+  },
+  {
+    "path": "client/src/styles.css",
+    "beforeSha256": "962095E0B3133B4FBBCD0B549C0B81E251607E251B63A86DEB6D4BE45171CC0F"
+  },
+  {
+    "path": "client/src/components/Layout.jsx",
+    "beforeSha256": "B2CCE7C7C42839E0AE9AFA334EC47E60845449DB51073D1E4AC442C02C35CA38"
+  },
+  {
+    "path": "client/src/pages/Auth.jsx",
+    "beforeSha256": "1B2A8E2113B0E39C89105509368CA5817BCECE0C6415D51CF38569E73E9DB42D"
+  },
+  {
+    "path": "client/src/pages/Watch.jsx",
+    "beforeSha256": "8FC649BDA13B200E33D47F3C7141DEC1354C846825C6FDE4292CE30580859C2E"
+  },
+  {
+    "path": "client/src/data/mockVideos.js",
+    "beforeSha256": "E5055AC842873523DE1FD4061F36E9984E2F569AB7C3C1CC021405A53147C3E5"
+  },
+  {
+    "path": "client/README.md",
+    "beforeSha256": "68DB0717DC1DEF5F2C429F79348DEC508D0827216072E1AC110844778FD95525"
+  },
+  {
+    "path": "client/CHANGES.md",
+    "beforeSha256": "6533414F956D55B9273E9587DDE41A3F6BF18B4E07C3C430E0CD8B746BD29920"
+  }
+]
