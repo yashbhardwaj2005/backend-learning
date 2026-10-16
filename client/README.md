@@ -56,6 +56,7 @@ client/
     App.jsx                 Routes for all pages
     styles.css              Theme, shared styles, responsive layouts
     api/client.js           Axios instance and actual user API calls
+    api/serverConnection.js Waits for the production API to wake before auth
     context/
       AuthContext.jsx       In-memory user state and cookie-based session
       LibraryContext.jsx    Device-only demo bookmarks, likes, history
@@ -143,7 +144,11 @@ Browser → https://yashstreamtube.vercel.app/api/v1/users/login
 
 The browser sees one HTTPS origin, so existing HttpOnly cookies work with the backend's SameSite=Lax policy. No token is put into localStorage and no cross-site cookie relaxation is needed for this setup. The backend's existing Secure flag still depends on its NODE_ENV; production should use NODE_ENV=production. Backend code/environment changes require approval.
 
-Production requests allow 90 seconds because free Render services can need about one minute to wake after idle. Local requests retain the existing 20-second timeout. Error messages on the deployed website no longer tell visitors to start port 8000 on their own computer.
+Render Free sleeps after 15 minutes without incoming traffic and usually needs about a minute to wake. Production session checking, login and registration now first check the existing GET `/users/current-user` route. A valid JSON 200 or anonymous 401 proves Express is ready; a hosting loading page does not. Transient failures retry only this read-only check for up to two minutes, showing “Connecting to server…” on the form. Login and registration are submitted once after readiness; they are never automatically repeated. Local development keeps its existing 20-second requests and does not need this hosting check.
+
+The checks share one attempt, reuse readiness for 15 seconds, and stop after the deadline. They add no endpoint, backend dependency, token storage or background keep-alive. Genuine API errors still surface. This handles ordinary startup delays; it cannot guarantee hosting uptime. Removing idle sleep entirely requires an always-on compute plan, which has not been purchased or changed.
+
+Run `node --test client/tests/serverConnection.test.js` from the project root for nine isolated startup-recovery tests. The production frontend was also checked against a local simulated sleeping API: it displayed the wait state, recovered, and submitted login exactly once. Those tests do not replace checking the actual hosted backend.
 
 **Check after redeploy:** `/register` should return the React page (200). `/api/v1/users/current-user` should return JSON 401 while signed out, not Vercel 404. Empty POST `/api/v1/users/login` should return backend JSON 400. Then test signup, login, refresh Profile and logout in the browser. The API must never return index.html.
 

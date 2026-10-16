@@ -1,0 +1,44 @@
+[
+  {
+    "path": "client/src/api/client.js",
+    "scope": "frontend",
+    "beforeSha256": "C2B660708412019F6808F73CA58865263166301B9EBE86F279E19E243B5FBE36",
+    "afterSha256": "17F8AAB9EEECCFF0CB356D4DBEA950DBC6693FEBB9BF42005AB78AAF8C41FA93"
+  },
+  {
+    "path": "client/src/context/AuthContext.jsx",
+    "scope": "frontend",
+    "beforeSha256": "12140081CFB83508310E4D44BD9D6194A43E1F9080623ABA809F8E8488BB2E12",
+    "afterSha256": "8B73A947584F9B8A7853C82629241D3F30BBA2A0C5B75F77D8046DBDC118A5B4"
+  },
+  {
+    "path": "client/src/pages/Auth.jsx",
+    "scope": "frontend",
+    "beforeSha256": "E50D76648605915CD8D4C1981561CED605BB2B53BE21FEB955FF12E00BD591FF",
+    "afterSha256": "51FCCC061F38D6467FF11A6D1A9FFD8880F88094DCD7533FA2510F91E1470550"
+  },
+  {
+    "path": "client/README.md",
+    "scope": "frontend",
+    "beforeSha256": "60A42CC95B786B248B963E44803335D7294528CCC19B4EBD7D13A47BF0362FD9",
+    "afterSha256": "94BEB925C0800659E4BF76C31B5E1128FD85B172C904D23EBC2683BF7A523805"
+  },
+  {
+    "path": "client/CHANGES.md",
+    "scope": "history",
+    "beforeSha256": "8835EA23D7CC8942FC9E799FFCE42A5792013E64933BA30209D72DE6DFFB0DD7",
+    "afterSha256": "76281A41B324F080951041F09D76177F152F78517B065BF4E8098FA2BDE23EC3"
+  },
+  {
+    "path": "client/src/api/serverConnection.js",
+    "scope": "frontend",
+    "beforeSha256": null,
+    "afterSha256": "FDA1A125477266583CD7AD32DD81F5586A6EACB3FAD5A8E5394404CF5F621D7D"
+  },
+  {
+    "path": "client/tests/serverConnection.test.js",
+    "scope": "frontend",
+    "beforeSha256": null,
+    "afterSha256": "EC7ECD780852EFB91C1A5C017B46D76BAEB4B4B28B8595B1CA40A84A078EFA1B"
+  }
+]

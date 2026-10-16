@@ -2,6 +2,34 @@
 
 Keep this file updated for every substantive change. Save original files before editing so a specific change can be undone without discarding unrelated work.
 
+## 16 October 2026 — Wait for the hosted backend before authentication
+
+- Diagnosed the live failure: Render displayed its service-waking loading page, then logged a new Node process at 19:02:05 IST and MongoDB/port readiness at 19:02:10. The existing website session recovered; the owner also confirmed login worked in their usual browser after startup. The earlier local folder cleanup changed no deployed application files.
+- Added frontend-only api/serverConnection.js and tests/serverConnection.test.js. Production session startup, login and registration check the existing read-only current-user route before proceeding. Valid JSON 200/401 is ready; transient network/gateway/loading-page responses retry for up to two minutes. Simultaneous checks share one attempt and readiness is cached for 15 seconds.
+- Updated api/client.js, context/AuthContext.jsx and pages/Auth.jsx to show a connecting message, keep the form available for typing, and disable submission during initial session checking. Credentials and uploads are sent once after readiness; POST requests are never automatically retried. Real backend errors remain errors.
+- No backend source, backend tests, environment values, ports, CORS/cookie rules, dependencies or hosting plan changed. The original Desktop cohort backup remains unchanged.
+- Validation: production build passed; all nine frontend recovery tests passed. A local production-build browser fixture returned two simulated 503 responses, recovered, navigated to Profile and recorded exactly one login POST, none while unavailable. These simulated checks are separate from the successful live session and owner-confirmed login.
+- This improves normal cold-start recovery. Render Free still sleeps after 15 idle minutes; removing sleep entirely requires an always-on plan. No polling runs after the bounded connection attempt and no keep-alive automation was created.
+- Exact originals, source hashes, test evidence and frontend-only undo are in docs/change-history/2026-10-16-auth-startup-recovery/. Run restore.ps1 there to preview; add -Restore to apply. Change history and all backend files are preserved. Publication verification is recorded in that snapshot README.
+
+## 16 October 2026 — Remove the nested duplicate from VS Code
+
+- At the owner's explicit request, removed only C:\Users\Yash\Desktop\ULTIMATE-BACKEND\ULTIMATE-BACKEND. The working top-level StreamTube folder and the separate Desktop\ULTIMATE-BACKEND-COHORT backup remain in place.
+- Confirmed the removed folder was ignored by Git, contained no tracked application files, had no filesystem links, and was not referenced by the active backend/frontend entry points or configuration.
+- Before removal, compared every cohort-backup file with the duplicate and verified a private archive of all 198 non-dependency files, including the incomplete old frontend scaffold. The archive stays in ignored client/.qa/2026-10-16-duplicate-cleanup/nested-copy-private.zip; it contains private configuration and must not be published. Installed dependencies can be recreated from the preserved package lock.
+- After removal, all 57 active application source/config/package/test files and all 190 cohort-backup files retain their previous hashes. Current private environment files are unchanged. No backend source, port, CORS policy, dependency declaration or deployment setting was edited.
+- Verification: frontend production build passed and all 15 existing backend tests passed. The first build attempt hit a Windows sandbox directory-access restriction; rerunning the same build with approved normal-user access passed. No application repair was needed.
+- Saved the exact previous history file, public checksums, cleanup record and undo notes in docs/change-history/2026-10-16-duplicate-cleanup/. No rollback is required for the working app. Recreating the removed duplicate is optional and needs a new explicit request; do not overwrite the current app or the separate original backup.
+
+## 16 October 2026 — Separate copy of the original annotated backend
+
+- At the owner's narrowed request, copied the older nested working backend into C:\Users\Yash\Desktop\ULTIMATE-BACKEND-COHORT. Both existing project folders remain in place; no cleanup, move, backend repair, deployment or remote update was performed.
+- Preserved the older src files and learning comments, docs, package files, README, formatting files, public files, private local configuration and Git history. Excluded only the unrelated client scaffold and reinstallable node_modules. No file inside the recovered folder was rewritten.
+- Verified all 190 copied files byte for byte, including 17 backend/package files. All 22 current backend/package/test files also match their pre-operation hashes.
+- The older annotated source matches saved pre-frontend Git tree ca82455 in content, allowing only Git's line-ending normalization. This supports the recovery choice; an exact snapshot tied to the first frontend request is unavailable, and historical private environment values cannot be proven.
+- Recovery evidence and copy-only undo instructions: docs/change-history/2026-10-16-original-backend-copy/. The prior folder-separation proposal was cancelled before execution. The current README, VS Code project structure, backend sources, ports and live service settings were not changed.
+- Saved the exact previous version of this history file before recording the recovery. Keep the recovered private environment file local and out of shared archives or GitHub.
+
 ## 16 October 2026 — New domain and real Ask AI
 
 - Updated the documented production domain to https://yashstreamtube.vercel.app. The owner approved changing Render's CORS_ORIGIN from the old Vercel domain to this new origin. Port configuration in src/index.js is unchanged. The existing Vercel API rewrite still targets the same Render service.

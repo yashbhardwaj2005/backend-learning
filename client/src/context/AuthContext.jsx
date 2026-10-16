@@ -14,11 +14,14 @@ function publicUser(user) {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [connecting, setConnecting] = useState(false);
 
   useEffect(() => {
     let active = true;
     authApi
-      .current()
+      .current((waiting) => {
+        if (active) setConnecting(waiting);
+      })
       .then(({ data }) => {
         if (active) setUser(publicUser(data.data));
       })
@@ -33,8 +36,8 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  async function login(identifier, password) {
-    const { data } = await authApi.login(identifier, password);
+  async function login(identifier, password, onWaiting) {
+    const { data } = await authApi.login(identifier, password, onWaiting);
     setUser(publicUser(data.data.user));
   }
 
@@ -48,7 +51,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, connecting, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

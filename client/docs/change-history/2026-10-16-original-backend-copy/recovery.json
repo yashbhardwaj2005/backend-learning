@@ -1,0 +1,14 @@
+{
+  "copiedFrom": "C:\\Users\\Yash\\Desktop\\ULTIMATE-BACKEND\\ULTIMATE-BACKEND",
+  "copiedTo": "C:\\Users\\Yash\\Desktop\\ULTIMATE-BACKEND-COHORT",
+  "copiedFilesVerified": 190,
+  "olderBackendFilesVerified": 17,
+  "currentBackendFilesUnchanged": 22,
+  "excluded": [
+    "client",
+    "node_modules"
+  ],
+  "localEnvironmentAndGitHistoryPreserved": true,
+  "sourceFoldersMovedOrDeleted": false,
+  "exactFirstDaySnapshotAvailable": false
+}

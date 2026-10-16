@@ -1,0 +1,8 @@
+{
+  "signedIn": true,
+  "checks": 5,
+  "coldResponses": 2,
+  "loginSubmissions": 1,
+  "refreshSubmissions": 1,
+  "loginWhileCold": false
+}

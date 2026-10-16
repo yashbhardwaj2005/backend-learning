@@ -18,14 +18,16 @@ import ThemeToggle from "../components/ThemeToggle";
 import ImagePicker from "../components/ImagePicker";
 
 export default function Auth({ register = false }) {
-  const { user, loading, login } = useAuth();
+  const { user, loading, connecting, login } = useAuth();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [waitingForServer, setWaitingForServer] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const serverStarting = connecting || waitingForServer;
   const nextPage =
     location.state?.from || new URLSearchParams(location.search).get("next");
   const redirect =
@@ -39,6 +41,7 @@ export default function Auth({ register = false }) {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (busy || loading) return;
     setError("");
     const fields = new FormData(event.currentTarget);
     if (
@@ -68,20 +71,25 @@ export default function Auth({ register = false }) {
         fields.set("fullName", fields.get("fullName").trim());
         fields.set("avatar", avatar);
         if (coverImage) fields.set("coverImage", coverImage);
-        await authApi.register(fields);
+        await authApi.register(fields, setWaitingForServer);
         // Registration creates the account but does not set login cookies.
         navigate("/login", {
           replace: true,
           state: { registered: true, from: redirect },
         });
       } else {
-        await login(fields.get("identifier"), fields.get("password"));
+        await login(
+          fields.get("identifier"),
+          fields.get("password"),
+          setWaitingForServer
+        );
         navigate(redirect, { replace: true });
       }
     } catch (requestError) {
       setError(getApiError(requestError));
     } finally {
       setBusy(false);
+      setWaitingForServer(false);
     }
   }
 
@@ -144,6 +152,13 @@ export default function Auth({ register = false }) {
           {error && (
             <div className="form-message error" role="alert">
               {error}
+            </div>
+          )}
+          {serverStarting && (
+            <div className="form-message info" role="status" aria-live="polite">
+              <LoaderCircle className="spin" size={16} />
+              Connecting to the server. It may take up to two minutes to wake
+              up. Your form will stay here while you wait.
             </div>
           )}
           <form className="auth-form" onSubmit={handleSubmit}>
@@ -230,12 +245,18 @@ export default function Auth({ register = false }) {
             </label>
             <button
               className="button button-primary auth-submit"
-              disabled={busy}
+              disabled={busy || loading}
             >
-              {busy ? (
+              {busy || loading ? (
                 <>
                   <LoaderCircle className="spin" size={18} />
-                  {register ? "Creating your account…" : "Signing you in…"}
+                  {serverStarting
+                    ? "Connecting to server…"
+                    : loading
+                      ? "Checking your session…"
+                      : register
+                        ? "Creating your account…"
+                        : "Signing you in…"}
                 </>
               ) : (
                 <>
